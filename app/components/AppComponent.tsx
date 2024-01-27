@@ -25,6 +25,7 @@ import TargetDataDisplay from "./aiu/panels/TargetDataDisplay";
 import { EAS } from "@ethereum-attestation-service/eas-sdk";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { useGlobalState } from "@/app/store/store";
 
 export const SettingsPage = dynamic(
     async () => (await import("./settings")).Settings,
@@ -171,15 +172,18 @@ export const AppComponent = ({ children }: { children: React.ReactNode }) => {
 
     const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e";
     const eas = new EAS(EASContractAddress);
-
+    const appState = useGlobalState(state => state)
     const usdcContractAddress = '0xd74c4701cc887ab8b6b5302ce4868c4fbc23de75'
     const fetchDb = async () => {
 
         try {
             const response = await fetch("/api/mongo"); // assume the same host
             ;
-            let aiu = await response.json();
-            console.log(aiu[0], "AIU")
+            let roys = await response.json();
+
+            appState.setRoys(roys)
+            console.log(roys, "Roys from DB")
+
 
         } catch (e: any) {
             console.log(e.message, "Error fetching player data from DB")

@@ -19,8 +19,8 @@ export async function GET() {
         const db = client.db("aiUniverse"); // Connect to the Database
 
         aiu = await db
-            .collection("aiUniverse")
-            .find({ _id: new ObjectId("65b2ee2d126f5df4ea66df20") })
+            .collection("royUniverse")
+            .find({})
             .limit(10)
             .toArray();
 

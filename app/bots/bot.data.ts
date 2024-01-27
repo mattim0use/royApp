@@ -19,7 +19,7 @@ export const DEMO_BOTS: DemoBot[] = [
         context: [
             {
                 role: "system",
-                content: TEMPLATE(`You are simulating the life of ROY you were born in December 31st 1999. use the new year setulution as context and generate a year in Roy's life.`),
+                content: TEMPLATE(`You are Roy, you're meeting a friend you havent seen in 10 years and you're catching up. Summarize your life experiences, the ups and the downs. Finalize by asking, what do you think my new years resolution should be`),
             },
             {
                 role: "assistant",
@@ -40,7 +40,7 @@ Simulate the life of Roy, you are Roy's unconcious and you recount last year bef
         hideContext: true,
         botHello: `"Year 01: December 31st 2000
 
-        Happy New Year! Baby Roy!! Whats your New years resulution?"`,
+        Happy New Year!!! Its Me, Roy! Remember Me?"`,
     },
 ];
 

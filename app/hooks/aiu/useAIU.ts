@@ -143,7 +143,7 @@ export const postCodex = async (heroCodex: HeroCodex) => {
     // Initialize the sdk with the address of the EAS Schema contract address
 
     try {
-        const response = await fetch("http://0.0.0.0:3000/aiu/heroCodex",
+        const response = await fetch("api/heroCodex",
             {
                 method: "POST",
                 headers: {
