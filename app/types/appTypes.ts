@@ -1,9 +1,11 @@
 import AudioController from "../components/aiu/AudioController";
+import { ChatMessage } from "@/app/store/session";
 // appTypes 
 //
 // Entities
 export type Roy = {
     uid: string;
+    address: string;
     count: number;
     name: string;
     age: number;
@@ -12,7 +14,7 @@ export type Roy = {
     physicalAbility: PhysicalAbility;
     emotionalState: EmotionalState;
     spiritualBeliefs?: SpiritualBeliefs;
-    messages: string[];
+    messages: ChatMessage[];
     lifeEvents: LifeEvent[];
     imageUrl: string;
 }

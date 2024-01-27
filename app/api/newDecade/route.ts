@@ -43,22 +43,23 @@ async function llamaindex(payload: string, id: string) {
     );
 }
 
-async function generateScannerOutput(roy: Roy) {
+async function generateScannerOutput(roy: any) {
     const messages: any[] = [
         {
             role: "system",
             content: `Simulate a decade of the life of Roy  reply with a JSON that summarizes the past decade of Roy's life 
                 type Roy = {
     uid: ${roy.uid};
-    name: ${roy.name};
-    age: ${roy.age + 10};
-    count:${roy.count + 1};
+    name: ${roy.roy.name};
+    age: ${roy.roy.age + 10};
+    count:${roy.roy.count + 1};
     finances: Finances;
-    experiences: Experience[];
+    experiences: LifeEvent[];
     physicalAbility: PhysicalAbility;
     emotionalState: EmotionalState;
     spiritualBeliefs?: SpiritualBeliefs;
-    lifeEvents: LifeEvent[];
+    lifeHistory: string[];
+
 }
 `
             ,
@@ -66,6 +67,7 @@ async function generateScannerOutput(roy: Roy) {
         {
             role: "assistant",
             content: `
+        ${JSON.stringify(roy.decade)}
 `,
         },
         {
@@ -89,11 +91,11 @@ ${JSON.stringify(roy)}
     return openAIResponse;
 }
 export async function POST(request: Request) {
-    const roy = await request.json();
-    console.log(roy)
+    const { query: load } = await request.json();
+    console.log(load)
 
 
-    const beacon = await generateScannerOutput(roy);
+    const beacon = await generateScannerOutput(load);
     console.log(beacon, "beacon")
     const playerData = JSON.parse(beacon ? beacon : "null");
     const db = client.db("aiUniverse"); // Connect to the database
@@ -101,7 +103,7 @@ export async function POST(request: Request) {
 
     // assumed input
     const attestationData = {
-        _id: `ROY${roy.uid}#${roy.count + 1}`,
+        _id: load.uid,
         Attestation: playerData,
     };
 
@@ -109,10 +111,9 @@ export async function POST(request: Request) {
 
     await heroCodex.updateOne(
 
-        { _id: new ObjectId(roy.uid) },
+        { _id: load.roy.uid },
         {
             $addToSet: {
-                id: roy.count,
                 roy: attestationData.Attestation
             }
         },

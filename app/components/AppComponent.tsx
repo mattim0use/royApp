@@ -21,7 +21,6 @@ import {
 import { Bot, useBotStore } from "../store/bot";
 import { SideBar } from "./layout/sidebar";
 import { LoadingPage } from "@/app/components/ui/loading";
-import TargetDataDisplay from "./aiu/panels/TargetDataDisplay";
 import { EAS } from "@ethereum-attestation-service/eas-sdk";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -148,7 +147,6 @@ export function Screen() {
                     <div className="flex flex-row pb-12">
 
                         {showSidebarOnMobile && <SideBar />}
-                        <TargetDataDisplay />
 
                     </div>
                 </>
@@ -181,7 +179,7 @@ export const AppComponent = ({ children }: { children: React.ReactNode }) => {
             ;
             let roys = await response.json();
 
-            appState.setRoys(roys)
+            appState.setRoys(roys[0].roy)
             console.log(roys, "Roys from DB")
 
 

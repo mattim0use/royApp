@@ -48,17 +48,18 @@ async function generateScannerOutput(roy: Roy) {
     const messages: any[] = [
         {
             role: "system",
-            content: `Simulate a decade of the life of Roy  reply with a JSON that summarizes the past decade of Roy's life 
+            content: `We're starting a game of ROY, a life well lived.  JSON that summarizes the first decade of Roy's life 
                 type Roy = {
     uid: ${roy.uid};
     name: ${roy.name};
-    age: number;
+    age: 10;
+    bornIn: {place:string, year:Date};
     finances: Finances;
-    experiences: Experience[];
+    experiences: LifeEvent[];
     physicalAbility: PhysicalAbility;
     emotionalState: EmotionalState;
     spiritualBeliefs?: SpiritualBeliefs;
-    lifeEvents: LifeEvent[];
+    lifeHistory: string[];
 }
 `
             ,
@@ -89,7 +90,7 @@ ${JSON.stringify(roy)}
     return openAIResponse;
 }
 export async function POST(request: Request) {
-    const roy = await request.json();
+    const { query: roy } = await request.json();
     console.log(roy)
 
 
@@ -101,19 +102,17 @@ export async function POST(request: Request) {
 
     // assumed input
     const attestationData = {
-        _id: `ROY${roy.uid}#${roy.count + 1}`,
+        _id: `${roy.uid}`,
         Attestation: playerData,
     };
 
     llamaindex(JSON.stringify(attestationData), attestationData._id);
 
     await heroCodex.updateOne(
-
-        { _id: new ObjectId("65b2f1276ab6adbc493efa32") },
+        { _id: new ObjectId(attestationData._id) },
         {
             $addToSet: {
-                id: attestationData._id,
-                roy: attestationData.Attestation
+                decades: attestationData.Attestation
             }
         },
         { upsert: true },// this creates new document if none match the filter
