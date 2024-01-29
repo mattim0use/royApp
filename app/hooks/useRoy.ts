@@ -1,5 +1,5 @@
 import { EAS, SchemaEncoder } from "@ethereum-attestation-service/eas-sdk";
-
+import { useGlobalState } from "@/app/store/store";
 
 
 
@@ -30,17 +30,19 @@ const createPostCard = async (res: any) => {
 
 }
 
-const createRoy = async (id: string, roy: RoyAttributes, name: string) => {
+
+
+const createRoy = async (id: string, roy: RoyAttributes, address: string) => {
     //Attest new Roy 
     // Generate Starting Decade
-    const query = { id, roy, name }
+    const load = { id, roy, address }
     const response = await fetch("/api/newRoy",
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(query),
+            body: JSON.stringify(load),
         });
     const r = await response.json();
 
@@ -50,10 +52,10 @@ const createRoy = async (id: string, roy: RoyAttributes, name: string) => {
     // image that comes up to your mind
     const postCard = await createPostCard(r);
 
-    return { parsed, roy }
-
+    return { parsed }
 }
 interface DecadeResolution {
+    uri: string;
     year: number;
     resolution: string;
 }
@@ -66,111 +68,24 @@ interface LifeEvent {
 }
 
 
-interface RoyAttributes {
-    uid: string;
+export interface RoyAttributes {
     name: string;
-    bornIn: { place: string, dateOfBirth: Date; }
-    finances: number;
+    currentLocation: string;
+    currentYear: number;
+    bornIn: { place: string, yearOfBirth: number; }
     experiences: LifeEvent[];
     lifeHistory: string[];
-    physicalAbility: string;
-    emotionalState: string;
-    spiritualBeliefs: string | null;
     count: number;
     // ... any additional attributes
 }
 
-const attestRoy = async (
-    name: string,
-    signer: any,
-    address: string
-) => {
-
-    const easContractAddress = "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458";
-    const schemaUID = "0x2e9af8cbe5bcedbde5ecc9374d6525f893c98db76a932916550b6d272404c6d5";
-    const eas = new EAS(easContractAddress);
-    // Signer must be an ethers-like signer.
-
-    if (!signer) return;
-    await eas.connect(signer);
-    // Initialize SchemaEncoder with the schema string
-    const offchain = await eas.getOffchain();
-    const schemaEncoder = new SchemaEncoder("string royName");
-    const encodedData = schemaEncoder.encodeData([
-        { name: "royName", value: name, type: "string" }
-    ]);
-    const offchainAttestation = await offchain.signOffchainAttestation(
-        {
-            version: 1,
-            recipient: address,
-            expirationTime: BigInt(0),
-            time: BigInt(0),
-            revocable: true,
-            refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
-            // Be aware that if your schema is not revocable, this MUST be false
-            schema: schemaUID,
-            data: encodedData,
-        },
-        signer,
-    )
-
-    const updatedData = JSON.stringify(
-        offchainAttestation,
-        (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-    );
-
-    let uid = offchainAttestation.uid;
-    console.log("New attestation UID:", updatedData);
-}
-
-export const advanceRoy = async (
-    resolution: string,
-    address: string,
-    offchain: any,
-    signer: any,
-
-) => {
-
-    const easContractAddress = "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458";
-    const schemaUID = "0x64f9c0f771b33583107be7ef7532e23ef8e0154919e40a1f14a67ca519a92a0e";
-    // Signer must be an ethers-like signer.
-    // Initialize SchemaEncoder with the schema string
-
-    const schemaEncoder = new SchemaEncoder("string royResolution");
-    const encodedData = schemaEncoder.encodeData([
-        { name: "royResolution", value: resolution, type: "string" }
-    ]);
-    const offchainAttestation = await offchain.signOffchainAttestation(
-        {
-            version: 1,
-            recipient: address,
-            expirationTime: BigInt(0),
-            time: BigInt(0),
-            revocable: true,
-            refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
-            // Be aware that if your schema is not revocable, this MUST be false
-            schema: schemaUID,
-            data: encodedData,
-        },
-        signer,
-    )
-
-    const updatedData = JSON.stringify(
-        offchainAttestation,
-        (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-    );
-
-    let uid = offchainAttestation.uid;
-    console.log("New attestation UID:", uid);
-    return uid;
-}
 
 
-const newDecade = async (uid: string, roy: RoyAttributes, decade: DecadeResolution) => {
+const newDecade = async (roy: RoyAttributes, decade: DecadeResolution) => {
     //Attest new Roy 
     // Generate Starting Decade
     //
-    const query = { uid, roy, decade }
+    const query = { roy, decade }
     const response = await fetch("/api/newDecade",
         {
             method: "POST",
@@ -192,26 +107,31 @@ const newDecade = async (uid: string, roy: RoyAttributes, decade: DecadeResoluti
 }
 
 // The Roy class
-class Roy {
+export class Roy {
     _id: string;
+    address: string;
     attributes: RoyAttributes;
     currentDecadeResolution: DecadeResolution | null;
-
     // The constructor initiates a Roy with default or provided attributes
-    constructor(uid: string, location: string, year: number, name: string, attributes?: Partial<RoyAttributes>) {
+    constructor(
+        uid: string,
+        address: string,
+        attributes?: Partial<RoyAttributes>,
+        location?: string,
+        year?: number,
+        name?: string,
+    ) {
         // Creates a unique identifier for each Roy instance
         this._id = uid
+        this.address = address
         // Default Roy's attributes
         const defaultAttributes: RoyAttributes = {
-            uid: uid,
-            name: name,
-            bornIn: { place: location, dateOfBirth: new Date(year) },
-            finances: 0,
+            name: name || "Roy",
+            currentLocation: location || "Earth",
+            currentYear: year || 1999 + 10,
+            bornIn: { place: location || "Denver", yearOfBirth: year || 1999 },
             experiences: [],
             lifeHistory: [],
-            physicalAbility: 'Healthy',
-            emotionalState: 'Neutral',
-            spiritualBeliefs: null,
             count: 0,
         };
 
@@ -222,7 +142,13 @@ class Roy {
 
     // Getter method for Roy's ID
     // 
-    getId(): string | null {
+    getId(address?: string, uid?: string): string | null {
+
+
+
+
+
+
         return this._id;
     }
     async simulateOrigin(): Promise<void> {
@@ -230,17 +156,14 @@ class Roy {
         // Update Roy's attributes, experiences, finances, etc.
 
         // For example, let's simulate an addition to experiences based on the resolution:
-        if (this.currentDecadeResolution) {
-            const response = await createRoy(this._id, this.attributes, this.currentDecadeResolution.resolution);
+        if (this._id) {
+            const response = await createRoy(this._id, this.attributes, this.address);
+            this.attributes = response.parsed
+            console.log("roy", this.attributes)
 
-            response.roy.experiences.forEach((e: LifeEvent) => {
 
-                this.attributes.experiences.push(e);
-            });
-
-            // Reset the currentDecadeResolution after processing it
-            this.currentDecadeResolution = null;
         }
+
     }
 
 
@@ -251,7 +174,7 @@ class Roy {
 
         // For example, let's simulate an addition to experiences based on the resolution:
         if (this.currentDecadeResolution) {
-            const response = await newDecade(this._id, this.attributes, this.currentDecadeResolution);
+            const response = await newDecade(this.attributes, this.currentDecadeResolution);
 
             response.roy.experiences.forEach((e: LifeEvent) => {
 
@@ -279,27 +202,10 @@ class Roy {
     }
 }
 
-export const useRoy = async (resolution: string, location: string, year: number, name: string, signer: any, address: any, offchain: any) => {
+export const useRoy = async (uid: string, address: string, resolution: string, roy: RoyAttributes) => {
     // Presumed usage
-    const uri = await advanceRoy(resolution, signer, address as `0x${string}`, offchain)
-    if (!uri) return;
-    const royInstance = new Roy(uri, location, year, name); // Create a new Roy instance
-
-    // Simulate setting a new decade's resolution and processing it
-    royInstance.setDecadeResolution({ year: 2020, resolution });
-    royInstance.simulateDecade();
-    // Retrieve Roy's current state
-    const royState = royInstance.getCurrentState();
-    console.log(royState);
-
-};
-
-
-export const newRoy = async (name: string, location: string, year: number, signer: any, address: any) => {
-    // Presumed usage
-    const uri = await advanceRoy(name, signer, address as `0x${string}`)
-    if (!uri) return;
-    const royInstance = new Roy(uri, location, year, name); // Create a new Roy instance
+    const royInstance = new Roy(uid, address, roy)// Create a new Roy instance
+    royInstance.setDecadeResolution({ uri: uid, year: (roy.currentYear + 10), resolution: resolution }); // Set a new decade's resolution
     // Simulate setting a new decade's resolution and processing it
     royInstance.simulateDecade();
     // Retrieve Roy's current state
@@ -307,4 +213,23 @@ export const newRoy = async (name: string, location: string, year: number, signe
     console.log(royState);
 
 };
+
+
+export const newRoy = async (uid: string, address: string, name: string, location: string, year: number) => {
+    // Presumed usage
+    const attributes = {
+    } as RoyAttributes
+    const royInstance = new Roy(uid, address, attributes, location, year, name); // Create a new Roy instance
+    // Simulate setting a new decade's resolution and processing it
+    royInstance.simulateOrigin();
+    // Retrieve Roy's current state
+    const royState = royInstance.getCurrentState();
+    console.log(royState);
+
+};
+
+export const loadRoy = (uid: string, address: string, attributes: RoyAttributes) => {
+    const myRoy = new Roy(uid, address, attributes); // Create a new Roy instance
+    return myRoy
+}
 

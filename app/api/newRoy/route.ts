@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 
 import { OpenAI as OAI, ChatMessage } from "llamaindex";
 import * as dotenv from "dotenv";
+import { RoyAttributes } from "@/app/hooks/useRoy";
 // Load environment variables from local .env file
 dotenv.config();
 
@@ -44,45 +45,48 @@ async function llamaindex(payload: string, id: string) {
     );
 }
 
-async function generateScannerOutput(roy: Roy) {
+async function generateScannerOutput(roy: RoyAttributes) {
     const messages: any[] = [
         {
             role: "system",
-            content: `We're starting a game of ROY, a life well lived.  JSON that summarizes the first decade of Roy's life 
-                type Roy = {
-    uid: ${roy.uid};
-    name: ${roy.name};
-    age: 10;
-    bornIn: {place:string, year:Date};
-    finances: Finances;
-    experiences: LifeEvent[];
-    physicalAbility: PhysicalAbility;
-    emotionalState: EmotionalState;
-    spiritualBeliefs?: SpiritualBeliefs;
-    lifeHistory: string[];
-}
+            content: `You are a Game Master AI Simulator for Roy: The game. simulate the past decade of the life of ${roy.name} in ${roy.currentLocation} in the year ${roy.currentYear}.
+Focus on the lifeEvent and lifeHistory fields. embelish the provided data by creating  a series of life events and use them to build a narrative. Ensure that is realistic and coherent to the context.
+  reply in JSON format using the Roy type.
+
 `
             ,
         },
         {
             role: "assistant",
             content: `
+                type Roy = {
+    name:${roy.name};
+    count:${roy.count};
+    currentLocation: string;
+    currentYear: ${roy.currentYear};
+    bornIn: ${JSON.stringify(roy.bornIn)};
+    experiences: LifeEvent[];
+    lifeHistory: string;
+    emotionalState: string;
+}
+type LifeEvent {
+    type: string; 
+    description: string;
+    timestamp: Date;
+}
 `,
         },
         {
             role: "user",
-            content: `
-${JSON.stringify(roy)}
-
-`,
+            content: `Simulate a new Decade for the life simulator game`,
         },
     ];
 
     const stream = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-1106",
+        model: "gpt-4-1106-preview",
         messages: messages,
         response_format: { type: "json_object" },
-        temperature: 1.5,
+        temperature: 0.5,
     });
 
     const rawOutput = stream.choices[0].message.content;
@@ -90,7 +94,7 @@ ${JSON.stringify(roy)}
     return openAIResponse;
 }
 export async function POST(request: Request) {
-    const { query: roy } = await request.json();
+    const { id: uid, roy, address } = await request.json();
     console.log(roy)
 
 
@@ -101,18 +105,16 @@ export async function POST(request: Request) {
     const heroCodex = db.collection('royUniverse'); // 
 
     // assumed input
-    const attestationData = {
-        _id: `${roy.uid}`,
-        Attestation: playerData,
-    };
+    const payload = { uid, roy };
 
-    llamaindex(JSON.stringify(attestationData), attestationData._id);
+
+    llamaindex(JSON.stringify(playerData), uid);//should we modify this id?
 
     await heroCodex.updateOne(
-        { _id: new ObjectId(attestationData._id) },
+        { _id: { address, uid } },
         {
             $addToSet: {
-                decades: attestationData.Attestation
+                royData: payload,
             }
         },
         { upsert: true },// this creates new document if none match the filter

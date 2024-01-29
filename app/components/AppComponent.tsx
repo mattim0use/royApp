@@ -179,7 +179,7 @@ export const AppComponent = ({ children }: { children: React.ReactNode }) => {
             ;
             let roys = await response.json();
 
-            appState.setRoys(roys[0].roy)
+            appState.setRoys(roys)
             console.log(roys, "Roys from DB")
 
 
@@ -207,7 +207,6 @@ export const AppComponent = ({ children }: { children: React.ReactNode }) => {
                 avatar={BlockieAvatar}
                 theme={darkTheme()}
             >
-                <Header />
                 <ErrorBoundary>
                     <Router>
                         <QueryClientProvider client={queryClient}>
@@ -215,14 +214,17 @@ export const AppComponent = ({ children }: { children: React.ReactNode }) => {
 
                                 <div className="flex flex-col min-h-screen">
 
+                                    <Header />
+
                                     <main className="relative flex flex-col flex-1">{children}</main>
+
+                                    <Footer />
 
                                 </div>
                             </SidebarContextProvider>
                         </QueryClientProvider>
                     </Router>
                 </ErrorBoundary>
-                <Footer />
                 <Toaster />
             </RainbowKitProvider>
         </WagmiConfig>
