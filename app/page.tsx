@@ -1,6 +1,11 @@
-"use client"
-import Link from "next/link";
+"use client";
+import React, { useState, useEffect } from "react";
 import type { NextPage } from "next";
+import BottomLeftComponent from "./components/BottomLeftComponent";
+import BottomMiddleComponent from "./components/BottomMiddleComponent";
+import BottomRightComponent from "./components/BottomRightComponent";
+import UpperLeftComponent from "./components/UpperLeftComponent";
+import UpperRightComponent from "./components/UpperRightComponent";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { BotScreen } from "./components/AppComponent";
 import Image from "next/image";
@@ -17,7 +22,8 @@ import { RoyAttributes } from "./hooks/useRoy";
 import toast from "react-hot-toast";
 
 const Home: NextPage = () => {
-    const account = useAccount()
+  const [isMobile, setIsMobile] = useState(false);
+const account = useAccount()
     const address: `0x${string}` = account.address ? account.address : "0x000";
     const botStore = useBotStore();
     const session = botStore.currentSession();
@@ -183,9 +189,27 @@ const Home: NextPage = () => {
 
 
 
-    return (
-        <>
+  // attest sending roy
+  // create story
+  // embed results
+  // upload to db
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+    };
 
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
+    <>
+      <div
+        className={isMobile ? "mobile-layout-class" : "desktop-layout-class"}
+      >
+        
             <div className="fixed z-10 flex flex-col text-black items-center flex-grow pt-10">
                 <div
                     className="relative  items-center w-2/3 h-1/2 backdrop-blur-lg"
@@ -279,8 +303,20 @@ const Home: NextPage = () => {
                 </div>
 
             </div>
-        </>
-    );
+        <img
+          src="/RoyTitleScreen.png"
+          className="w-full max-w-md mx-auto"
+          alt="Roy Title Screen"
+        />
+
+        <UpperLeftComponent />
+        <UpperRightComponent />
+        <BottomLeftComponent />
+        <BottomMiddleComponent />
+        <BottomRightComponent />
+      </div>
+    </>
+  );
 };
 
 export default Home;

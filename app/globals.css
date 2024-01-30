@@ -30,3 +30,7 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.mobile-layout-class {
+  @apply flex flex-col items-center;
+}
