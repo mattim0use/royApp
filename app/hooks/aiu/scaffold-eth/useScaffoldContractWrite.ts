@@ -1,11 +1,24 @@
 import { useState } from "react";
 import { Abi, ExtractAbiFunctionNames } from "abitype";
 import { useContractWrite, useNetwork } from "wagmi";
-import { useDeployedContractInfo, useTransactor } from "@/app/hooks/aiu/scaffold-eth";
-import { getParsedError, getTargetNetwork, notification } from "@/app/utils/scaffold-eth";
-import { ContractAbi, ContractName, UseScaffoldWriteConfig } from "@/app/utils/scaffold-eth/contract";
+import {
+  useDeployedContractInfo,
+  useTransactor,
+} from "@/app/hooks/aiu/scaffold-eth";
+import {
+  getParsedError,
+  getTargetNetworks,
+  notification,
+} from "@/app/utils/scaffold-eth";
+import {
+  ContractAbi,
+  ContractName,
+  UseScaffoldWriteConfig,
+} from "@/app/utils/scaffold-eth/contract";
 
-type UpdatedArgs = Parameters<ReturnType<typeof useContractWrite<Abi, string, undefined>>["writeAsync"]>[0];
+type UpdatedArgs = Parameters<
+  ReturnType<typeof useContractWrite<Abi, string, undefined>>["writeAsync"]
+>[0];
 
 /**
  * @dev wrapper for wagmi's useContractWrite hook(with config prepared by usePrepareContractWrite hook) which loads in deployed contract abi and address automatically
@@ -16,82 +29,87 @@ type UpdatedArgs = Parameters<ReturnType<typeof useContractWrite<Abi, string, un
  * @param config.value - value in ETH that will be sent with transaction
  */
 export const useScaffoldContractWrite = <
-    TContractName extends ContractName,
-    TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, "nonpayable" | "payable">,
+  TContractName extends ContractName,
+  TFunctionName extends ExtractAbiFunctionNames<
+    ContractAbi<TContractName>,
+    "nonpayable" | "payable"
+  >,
 >({
-    contractName,
-    functionName,
-    args,
-    value,
-    onBlockConfirmation,
-    blockConfirmations,
-    ...writeConfig
+  contractName,
+  functionName,
+  args,
+  value,
+  onBlockConfirmation,
+  blockConfirmations,
+  ...writeConfig
 }: UseScaffoldWriteConfig<TContractName, TFunctionName>) => {
-    const { data: deployedContractData } = useDeployedContractInfo(contractName);
-    const { chain } = useNetwork();
-    const writeTx = useTransactor();
-    const [isMining, setIsMining] = useState(false);
-    const configuredNetwork = getTargetNetwork();
+  const { data: deployedContractData } = useDeployedContractInfo(contractName);
+  const { chain } = useNetwork();
+  const writeTx = useTransactor();
+  const [isMining, setIsMining] = useState(false);
+  const configuredNetwork = getTargetNetwork();
 
-    const wagmiContractWrite = useContractWrite({
-        chainId: configuredNetwork.id,
-        address: deployedContractData?.address,
-        abi: deployedContractData?.abi as Abi,
-        functionName: functionName as any,
-        args: args as unknown[],
-        value: value,
-        ...writeConfig,
-    });
+  const wagmiContractWrite = useContractWrite({
+    chainId: configuredNetwork.id,
+    address: deployedContractData?.address,
+    abi: deployedContractData?.abi as Abi,
+    functionName: functionName as any,
+    args: args as unknown[],
+    value: value,
+    ...writeConfig,
+  });
 
-    const sendContractWriteTx = async ({
-        args: newArgs,
-        value: newValue,
-        ...otherConfig
-    }: {
-        args?: UseScaffoldWriteConfig<TContractName, TFunctionName>["args"];
-        value?: UseScaffoldWriteConfig<TContractName, TFunctionName>["value"];
-    } & UpdatedArgs = {}) => {
-        if (!deployedContractData) {
-            notification.error("Target Contract is not deployed, did you forget to run `yarn deploy`?");
-            return;
-        }
-        if (!chain?.id) {
-            notification.error("Please connect your wallet");
-            return;
-        }
-        if (chain?.id !== configuredNetwork.id) {
-            notification.error("You are on the wrong network");
-            return;
-        }
+  const sendContractWriteTx = async ({
+    args: newArgs,
+    value: newValue,
+    ...otherConfig
+  }: {
+    args?: UseScaffoldWriteConfig<TContractName, TFunctionName>["args"];
+    value?: UseScaffoldWriteConfig<TContractName, TFunctionName>["value"];
+  } & UpdatedArgs = {}) => {
+    if (!deployedContractData) {
+      notification.error(
+        "Target Contract is not deployed, did you forget to run `yarn deploy`?",
+      );
+      return;
+    }
+    if (!chain?.id) {
+      notification.error("Please connect your wallet");
+      return;
+    }
+    if (chain?.id !== configuredNetwork.id) {
+      notification.error("You are on the wrong network");
+      return;
+    }
 
-        if (wagmiContractWrite.writeAsync) {
-            try {
-                setIsMining(true);
-                await writeTx(
-                    () =>
-                        wagmiContractWrite.writeAsync({
-                            args: newArgs ?? args,
-                            value: newValue ?? value,
-                            ...otherConfig,
-                        }),
-                    { onBlockConfirmation, blockConfirmations },
-                );
-            } catch (e: any) {
-                const message = getParsedError(e);
-                notification.error(message);
-            } finally {
-                setIsMining(false);
-            }
-        } else {
-            notification.error("Contract writer error. Try again.");
-            return;
-        }
-    };
+    if (wagmiContractWrite.writeAsync) {
+      try {
+        setIsMining(true);
+        await writeTx(
+          () =>
+            wagmiContractWrite.writeAsync({
+              args: newArgs ?? args,
+              value: newValue ?? value,
+              ...otherConfig,
+            }),
+          { onBlockConfirmation, blockConfirmations },
+        );
+      } catch (e: any) {
+        const message = getParsedError(e);
+        notification.error(message);
+      } finally {
+        setIsMining(false);
+      }
+    } else {
+      notification.error("Contract writer error. Try again.");
+      return;
+    }
+  };
 
-    return {
-        ...wagmiContractWrite,
-        isMining,
-        // Overwrite wagmi's write async
-        writeAsync: sendContractWriteTx,
-    };
+  return {
+    ...wagmiContractWrite,
+    isMining,
+    // Overwrite wagmi's write async
+    writeAsync: sendContractWriteTx,
+  };
 };
