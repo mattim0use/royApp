@@ -24,36 +24,14 @@ const createPostCard = async (res: any) => {
     const r = await response.json();
 
     console.log("rawResponse", r);
-    const parsed = JSON.parse(r)
 
-    return { parsed }
+    return { r }
 
 }
 
 
 
-const createRoy = async (id: string, roy: RoyAttributes, address: string) => {
-    //Attest new Roy 
-    // Generate Starting Decade
-    const load = { id, roy, address }
-    const response = await fetch("/api/newRoy",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(load),
-        });
-    const r = await response.json();
 
-    console.log("rawResponse", r);
-    const parsed: RoyAttributes = JSON.parse(r)
-
-    // image that comes up to your mind
-    const postCard = await createPostCard(r);
-
-    return { parsed }
-}
 interface DecadeResolution {
     uri: string;
     year: number;
@@ -76,10 +54,32 @@ export interface RoyAttributes {
     experiences: LifeEvent[];
     lifeHistory: string[];
     count: number;
+    image: string;
     // ... any additional attributes
 }
 
+const createRoy = async (id: string, roy: RoyAttributes, address: string) => {
+    //Attest new Roy 
+    // Generate Starting Decade
+    const load = { id, roy, address }
+    const response = await fetch("/api/newRoy",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(load),
+        });
+    const r = await response.json();
 
+    console.log("rawResponse", r);
+    const parsed: RoyAttributes = JSON.parse(r)
+
+    // image that comes up to your mind
+    const postCard = await createPostCard(parsed.lifeHistory);
+
+    return { parsed, postCard }
+}
 
 const newDecade = async (roy: RoyAttributes, decade: DecadeResolution) => {
     //Attest new Roy 
@@ -102,7 +102,7 @@ const newDecade = async (roy: RoyAttributes, decade: DecadeResolution) => {
     // image that comes up to your mind
     const postCard = await createPostCard(r);
 
-    return { parsed, roy }
+    return { parsed, postCard }
 
 }
 
@@ -133,6 +133,7 @@ export class Roy {
             experiences: [],
             lifeHistory: [],
             count: 0,
+            image: ""
         };
 
         // Assign attributes with provided values taking precedence over defaults
@@ -143,24 +144,17 @@ export class Roy {
     // Getter method for Roy's ID
     // 
     getId(address?: string, uid?: string): string | null {
-
-
-
-
-
-
         return this._id;
     }
     async simulateOrigin(): Promise<void> {
         // The simulation logic tailored to the game's rules would go here
         // Update Roy's attributes, experiences, finances, etc.
-
         // For example, let's simulate an addition to experiences based on the resolution:
         if (this._id) {
             const response = await createRoy(this._id, this.attributes, this.address);
             this.attributes = response.parsed
-            console.log("roy", this.attributes)
-
+            this.attributes.image = response.postCard.r.image
+            console.log("roy", this.attributes, response);
 
         }
 
@@ -176,10 +170,7 @@ export class Roy {
         if (this.currentDecadeResolution) {
             const response = await newDecade(this.attributes, this.currentDecadeResolution);
 
-            response.roy.experiences.forEach((e: LifeEvent) => {
 
-                this.attributes.experiences.push(e);
-            });
 
             // Reset the currentDecadeResolution after processing it
             this.currentDecadeResolution = null;
@@ -221,10 +212,10 @@ export const newRoy = async (uid: string, address: string, name: string, locatio
     } as RoyAttributes
     const royInstance = new Roy(uid, address, attributes, location, year, name); // Create a new Roy instance
     // Simulate setting a new decade's resolution and processing it
-    royInstance.simulateOrigin();
+    await royInstance.simulateOrigin();
     // Retrieve Roy's current state
-    const royState = royInstance.getCurrentState();
-    console.log(royState);
+    console.log(royInstance);
+    return royInstance;
 
 };
 

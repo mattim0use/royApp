@@ -14,6 +14,7 @@ import { useGlobalState } from "./store/store";
 import { ChatMessage } from "./store/session";
 import { useEffect, useState } from "react";
 import { RoyAttributes } from "./hooks/useRoy";
+import toast from "react-hot-toast";
 
 const Home: NextPage = () => {
     const account = useAccount()
@@ -39,7 +40,7 @@ const Home: NextPage = () => {
     const eas = new EAS(easContractAddress);
 
     const roys = state.roys;
-    const roy = state.roy;
+    let roy = state.roy;
     console.log(roys);
     // Signer must be an ethers-like signer.
     //
@@ -54,20 +55,22 @@ const Home: NextPage = () => {
             if (royIndex >= filteredRoys.length - 1) setIndex(0);
         }
         if (type === "Decade") {
+
+            if (decade + 1 >= filteredRoys[royIndex].roy.length) return setDecade(0);
             setDecade(decade + 1)
-            if (decade >= filteredRoys[royIndex].roy.length - 1) setDecade(0);
         }
     }
 
     useEffect(() => {
-        console.log(roys)
+        console.log(roys, royIndex, decade)
         if (!filteredRoys.length) return
         let royData = filteredRoys[royIndex].roy[decade]
-        let royAttributes: RoyAttributes = royData && royData.roy
-        const roy = new Roy(royData.uid, address, royAttributes)
+        let rIndex = filteredRoys[royIndex]._id.uid
+        let royAttributes: RoyAttributes = royData && royData
+        roy = new Roy(rIndex, address, royAttributes)
         setRoy(roy)
-        console.log(roy)
-    }, [roys, address, royIndex, decade])
+        console.log(roy, royData)
+    }, [address, royIndex, decade, index, roys])
     // Initialize SchemaEncoder with the schema string
     const attestRoy = async (
     ) => {
@@ -108,8 +111,9 @@ const Home: NextPage = () => {
 
         let uid = offchainAttestation.uid;
         console.log("New attestation UID:", updatedData);
-        await newRoy(uid, address, name, location, Number(year))
-
+        roy = await newRoy(uid, address, name, location, Number(year))
+        state.setRoy(roy);
+        toast.success("Roy Attested!");
     }
 
 
@@ -165,13 +169,14 @@ const Home: NextPage = () => {
 
     const RoyExperiences = () => {
         if (!roy.attributes) return
-        const updateIndex = () => {
+        const updateRoyIndex = () => {
             setNewIndex(index + 1)
-            if (index + 1 > roy.attributes.experiences.length - 1) setIndex(0)
+            if (index >= roy.attributes.experiences.length - 1) setNewIndex(0)
         }
+        console.log(roy)
         return (
-            <div onClick={() => updateIndex()} className="flex flex-row cursor-pointer border-2 h-[100px] overflow-auto">
-                <li><strong>Life Event: <br />{roy.attributes.experiences[index].type}</strong> : {roy.attributes.experiences[index].description}</li>
+            <div onClick={() => updateRoyIndex()} className="flex flex-row cursor-pointer border-2 h-[100px] overflow-auto">
+                <li><strong>Life Event: <br />{roy.attributes.experiences[index]?.type}</strong> : {roy.attributes.experiences[index]?.description}</li>
             </div>)
     }
 
@@ -187,7 +192,7 @@ const Home: NextPage = () => {
 
                 >
                     <Image
-                        src={houseBackground}
+                        src={roy.attributes?.image || "/image.png"}
                         fill
                         alt="bg" />
 
@@ -219,14 +224,21 @@ const Home: NextPage = () => {
                                     {roy.attributes && (
                                         <>
                                             <ul className="p-2 m-2 w-full">
-                                                <li><strong>Name:</strong> {roy.attributes.name}</li>
-                                                <li><strong>Current Location: </strong> {roy.attributes.currentLocation}</li>
-                                                <li><strong>Current Year:</strong>  {roy.attributes.currentYear}</li>
-                                                <li><strong>Current Decade:</strong>  {roy.attributes.count}</li>
-                                                <li><strong>Resolution:</strong>  {roy.currentDecadeResolution}</li>
+                                                <li><strong>Name:</strong> {roy.attributes?.name}</li>
+                                                <li><strong>Current Location: </strong> {roy.attributes?.currentLocation}</li>
+                                                <li><strong>Current Year:</strong>  {roy.attributes?.currentYear}</li>
+                                                <li><strong>Current Decade:</strong>  {roy.attributes?.count}</li>
+                                                <li><strong>Resolution:</strong>  {roy?.currentDecadeResolution}</li>
 
                                                 <RoyExperiences />
+                                                <Image
+                                                    src={roy.attributes.image}
+                                                    height={200}
+                                                    width={200}
+                                                    className="border-2"
+                                                    alt="bg" />
                                             </ul>
+
                                         </>
                                     )
                                     }
