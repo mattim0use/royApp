@@ -1,5 +1,6 @@
 import { EAS, SchemaEncoder } from "@ethereum-attestation-service/eas-sdk";
 import { useGlobalState } from "@/app/store/store";
+import toast from "react-hot-toast";
 
 
 
@@ -74,6 +75,7 @@ const createRoy = async (id: string, roy: RoyAttributes, address: string) => {
 
     console.log("rawResponse", r);
     const parsed: RoyAttributes = JSON.parse(r)
+    toast.success(`"${parsed.name} has been created"`)
 
     // image that comes up to your mind
     const postCard = await createPostCard(parsed.lifeHistory);
