@@ -105,8 +105,6 @@ export async function POST(request: Request) {
     const heroCodex = db.collection('royUniverse'); // 
 
     // assumed input
-    const payload = { uid, roy };
-
 
     llamaindex(JSON.stringify(playerData), uid);//should we modify this id?
 
@@ -114,7 +112,7 @@ export async function POST(request: Request) {
         { _id: { address, uid } },
         {
             $addToSet: {
-                royData: payload,
+                roy: playerData,
             }
         },
         { upsert: true },// this creates new document if none match the filter

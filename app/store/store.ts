@@ -16,8 +16,8 @@ type GlobalState = {
     nativeCurrencyPrice: number;
     roy: any
     setRoy: (newRoy: any) => void;
-    roys: [{ roy: [{ roy: RoyAttributes, uid: string }], _id: { address: string, uid: string } }];
-    setRoys: (newRoys: [{ roy: [{ roy: RoyAttributes, uid: string }], _id: { address: string, uid: string } }]) => void;
+    roys: [{ roy: [RoyAttributes], _id: { address: string, uid: string } }];
+    setRoys: (newRoys: [{ roy: [RoyAttributes], _id: { address: string, uid: string } }]) => void;
     setNativeCurrencyPrice: (newNativeCurrencyPriceState: number) => void;
     targetNetwork: ChainWithAttributes;
     setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
@@ -28,8 +28,8 @@ export const useGlobalState = create<GlobalState>(set => ({
     setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
     roy: {} as Roy,
     setRoy: (newRoy: Roy) => set(() => ({ roy: newRoy })),
-    roys: [{}] as [{ roy: [{ roy: RoyAttributes, uid: string }], _id: { address: string, uid: string } }],
-    setRoys: (newRoys: [{ roy: [{ roy: RoyAttributes, uid: string }], _id: { address: string, uid: string } }]) => set(() => ({ roys: newRoys })),
+    roys: [{}] as [{ roy: [RoyAttributes], _id: { address: string, uid: string } }],
+    setRoys: (newRoys: [{ roy: [RoyAttributes], _id: { address: string, uid: string } }]) => set(() => ({ roys: newRoys })),
     targetNetwork: scaffoldConfig.targetNetworks[0],
     setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
 }));
