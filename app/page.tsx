@@ -151,12 +151,13 @@ const Home: NextPage = () => {
 
     return (
         <>
+
             <div
                 className={isMobile ? "mobile-layout-class" : "desktop-layout-class"}
             >
 
 
-                <div className="fixed -top-24 left-1/4 -ml-4 mb-6 flex flex-col text-black items-center flex-grow pt-10">
+                <div className="fixed -top-24 left-1/4 -ml-4 mb-6 flex flex-col items-center flex-grow pt-10 text-green-500 font-pixellify">
 
                     <div
                         className="absolute top-80 left-40  backdrop-blur-lg rounded-full"
@@ -169,7 +170,7 @@ const Home: NextPage = () => {
                         />
 
                         <div
-                            className="relative overflow-auto w-[500px] h-[450px] bg-gradient-to-b from-transparent to-gray-900 opacity-95 backdrop-blur-lg text-white p-12 rounded-badge">
+                            className="relative overflow-auto w-[500px] h-[450px] bg-gradient-to-b from-transparent to-gray-900 opacity-95 backdrop-blur-lg p-12 rounded-badge">
 
 
                             <RoyInterface />
@@ -186,7 +187,7 @@ const Home: NextPage = () => {
                         src="/royInterface.png"
                         alt="Roy Interface"
                     />
-                    <div className="absolute right-12 p-2 border-2 w-[350px] top-0">
+                    <div className="absolute right-12 p-2 w-[350px] top-0">
                         <Pie2Degrees />
 
 

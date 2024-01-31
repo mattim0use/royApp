@@ -2,6 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { AppComponent as ScaffoldEthAppWithProviders } from "@/app/components/AppComponent";
 import "@/app/globals.css";
+import { MetaHeader } from "./components/aiu/MetaHeader";
 
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
@@ -44,6 +45,11 @@ export const metadata: Metadata = {
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     return (
         <html>
+            <head>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet" />
+            </head>
             <body>
                 <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
             </body>

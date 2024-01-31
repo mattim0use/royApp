@@ -16,6 +16,10 @@ module.exports = {
             },
         },
         extend: {
+            fontFamily: {
+                pixellify: ['Pixelify Sans', "sans-serif"],
+                // Add more custom font families as needed
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",

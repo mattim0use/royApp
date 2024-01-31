@@ -21,7 +21,7 @@ const UpperRightComponent: React.FC = () => {
         }
         console.log(roy)
         return (
-            <div onClick={() => updateRoyIndex()} className="flex flex-row cursor-pointer border-2 h-[150px] mt-4 text-lg overflow-auto p-1">
+            <div onClick={() => updateRoyIndex()} className="flex flex-row cursor-pointer border-2 border-green-500 h-[150px] mt-4 text-lg overflow-auto p-1">
                 <li><strong>Life Event: <br />{roy.attributes.experiences[index]?.type}</strong> : {roy.attributes.experiences[index]?.description}</li>
             </div>)
     }

@@ -223,7 +223,7 @@ export function Chat() {
                         const shouldShowClearContextDivider = i === clearContextIndex - 1;
 
                         return (
-                            <div className="space-y-5" key={i}>
+                            <div className="space-y-5 p-6" key={i}>
                                 <div
                                     className={
                                         isUser
@@ -250,7 +250,7 @@ export function Chat() {
                                                 )}
                                                 <div
                                                     className={cn(
-                                                        "box-border max-w-full text-sm select-text relative break-words rounded-lg px-3 py-2",
+                                                        "box-border max-w-full text-md select-text relative break-words rounded-lg px-3 py-2",
                                                         isUser
                                                             ? "ml-auto bg-primary text-primary-foreground"
                                                             : isMemory
@@ -282,7 +282,7 @@ export function Chat() {
                                                     />
                                                 </div>
 
-                                                <div className="text-xs text-muted-foreground opacity-80 whitespace-nowrap text-right w-full box-border pointer-events-none z-[1]">
+                                                <div className="text-sm text-muted-foreground opacity-80 whitespace-nowrap text-right w-full box-border pointer-events-none z-[1]">
                                                     {isContext
                                                         ? Locale.Chat.IsContext
                                                         : message.date?.toLocaleString()}
@@ -356,7 +356,8 @@ export function Chat() {
                     )}
 
                 </div>
-                {!isHidden && (
+
+                {isHidden && (
 
                     <ChatInput
                         inputRef={inputRef}
@@ -368,6 +369,7 @@ export function Chat() {
                         setAutoScroll={setAutoScroll}
                     />)}
             </div>
+
         </div>
     );
 }

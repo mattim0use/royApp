@@ -137,12 +137,8 @@ const BottomMiddleComponent: React.FC = () => {
 
 
     return (
-        <div className="bg-blue-500 border-white border rounded-xl z-10 min-w-[400px] min-h-[300px] mx-auto my-10 fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4 text-center flex flex-col justify-between">
+        <div className="bg-green-700 border-black border rounded-xl z-10 min-w-[400px] min-h-[300px] mx-auto my-10 fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4 text-center flex flex-col justify-between">
             <div className="fixed left-1/2 transform -translate-x-1/2">
-
-
-
-
                 <ul className="text-2xl font-bold text-white py-3 px-2 rounded-full cursor-pointer">
                     <label>
                         {" "}
@@ -184,7 +180,7 @@ const BottomMiddleComponent: React.FC = () => {
             </div>
             <button
                 onClick={() => attestRoy()}
-                className="bg-red-500 text-white my-1 py-2 px-4 rounded fixed bottom-0 left-1/2 transform -translate-x-1/2"
+                className="bg-red-500 text-white my-1 py-2 px-4 rounded fixed bottom-2 left-1/2 transform -translate-x-1/2"
             >
                 Submit
             </button>
