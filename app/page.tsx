@@ -102,7 +102,7 @@ const Home: NextPage = () => {
         return (
             <>
                 <Image
-                    className="fixed cursor-pointer top-56 right-[516px]"
+                    className="fixed cursor-pointer top-52 right-[510px]"
                     src="/button1.png"
                     style={{ transform: `rotate(${roySlice}deg)` }}
                     height={125}
@@ -112,16 +112,16 @@ const Home: NextPage = () => {
                     alt="bg" />
 
                 <Image
-                    className="fixed cursor-pointer top-96 right-[490px]"
+                    className="fixed cursor-pointer top-96  right-[490px]"
                     src="/button2.png"
                     style={{ transform: `rotate(${decadeSlice}deg)` }}
-                    height={175}
-                    width={175}
+                    height={160}
+                    width={160}
                     onClick={() => updateIndex("Decade")}
 
                     alt="bg" />
                 <Image
-                    className="fixed cursor-pointer bottom-52 right-[516px]"
+                    className="fixed cursor-pointer bottom-52 right-[515px]"
                     src="/button2.png"
                     style={{ transform: `rotate(${stateSlice}deg)` }}
                     height={125}
@@ -159,7 +159,7 @@ const Home: NextPage = () => {
                 <div className="fixed -top-24 left-1/4 -ml-4 mb-6 flex flex-col text-black items-center flex-grow pt-10">
 
                     <div
-                        className="absolute top-80 left-40 backdrop-blur-lg rounded-full"
+                        className="absolute top-80 left-40  backdrop-blur-lg rounded-full"
                     >
                         <Image
                             className="fixed"
@@ -180,7 +180,7 @@ const Home: NextPage = () => {
                     </div>
 
                     <Image
-                        className="fixed left-[24%] top-0 pointer-events-none"
+                        className="fixed left-[25%] top-6 pointer-events-none"
                         width={1000}
                         height={1000}
                         src="/royInterface.png"
