@@ -43,7 +43,7 @@ const BottomMiddleComponent: React.FC = () => {
     const attestRoy = async (
     ) => {
 
-        const schemaUID = "0x2f7d623600c57b6457cb782da8ae13105507c11e1500377672f9d4236f9dd6ec";
+        const schemaUID = "0x7559b6ba03d0f9bd9813dd2b68cb94232e0e3205201a649330fd0bfcf6929be4";
         const eas = new EAS(easContractAddress);
         // Signer must be an ethers-like signer.
 
@@ -57,28 +57,20 @@ const BottomMiddleComponent: React.FC = () => {
             { name: "royLocation", value: location, type: "string" },
             { name: "royYear", value: year, type: "uint24" }
         ]);
-        const offchainAttestation = await offchain.signOffchainAttestation(
-            {
-                version: 1,
-                recipient: address,
+        const tx = await eas.attest({
+            schema: schemaUID,
+            data: {
+                recipient: "0x0000000000000000000000000000000000000000",
                 expirationTime: BigInt(0),
-                time: BigInt(0),
-                revocable: true,
-                refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                // Be aware that if your schema is not revocable, this MUST be false
-                schema: schemaUID,
+                revocable: true, // Be aware that if your schema is not revocable, this MUST be false
                 data: encodedData,
+                value: BigInt(5000000000),
             },
-            signer,
-        )
+        });
 
-        const updatedData = JSON.stringify(
-            offchainAttestation,
-            (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-        );
 
-        let uid = offchainAttestation.uid;
-        console.log("New attestation UID:", updatedData);
+
+        let uid = tx.tx.data;
         roy = await newRoy(uid, address, name, location, Number(year))
         state.setRoy(roy);
         toast.success("Roy Attested!");

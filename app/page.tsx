@@ -155,6 +155,12 @@ const Home: NextPage = () => {
             <div
                 className={isMobile ? "mobile-layout-class" : "desktop-layout-class"}
             >
+                <Image
+                    className="fixed"
+                    fill
+                    src="/wallBackground.png"
+                    alt="bg"
+                />
 
 
                 <div className="fixed -top-24 left-1/4 -ml-4 mb-6 flex flex-col items-center flex-grow pt-10 text-green-500 font-pixellify">
@@ -170,7 +176,7 @@ const Home: NextPage = () => {
                         />
 
                         <div
-                            className="relative overflow-auto w-[500px] h-[450px] bg-gradient-to-b from-transparent to-gray-900 opacity-95 backdrop-blur-lg p-12 rounded-badge">
+                            className="relative overflow-auto w-[550px] h-[450px] bg-gradient-to-b from-transparent to-gray-900 opacity-95 backdrop-blur-lg p-12 rounded-badge">
 
 
                             <RoyInterface />

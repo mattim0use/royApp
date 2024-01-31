@@ -31,7 +31,7 @@ const UpperRightComponent: React.FC = () => {
     return (
         <>
 
-            <div className="absolute right-0 p-2  w-[500px] h-[400px] top-10">
+            <div className="absolute right-6 p-2  w-[500px] h-[400px] top-10">
 
                 <div className="flex flex-row w-full h-full">
 
