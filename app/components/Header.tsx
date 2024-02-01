@@ -57,7 +57,7 @@ export const Header = () => {
   );
 
   return (
-    <div className="sticky lg:static top-0 navbar bg-yellow-200 text-green-800 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
+    <div className="sticky lg:static top-0 navbar bg-yellow-200 text-green-600 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
         <div className="lg:hidden dropdown" ref={burgerMenuRef}>
           <label
@@ -104,7 +104,7 @@ export const Header = () => {
         <div className="overflow-hidden h-8 relative flex items-center">
           {" "}
           {/* Set the height to your preference */}
-          <div className="animate-ticker font-pixellify font-bold whitespace-nowrap">
+          <div className="animate-ticker font-pixellify font-bold text-sm whitespace-nowrap">
             <span className="mx-3">
               Roy is now LIVE! Can you be the best Roy?
             </span>
