@@ -9,6 +9,8 @@
 
 body {
   min-height: 100vh;
+
+  background-color: transparent;
 }
 
 h1,
@@ -33,4 +35,17 @@ p {
 
 .mobile-layout-class {
   @apply flex flex-col items-center;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 35s linear infinite;
 }
