@@ -25,13 +25,7 @@ const BottomMiddleComponent: React.FC = () => {
     const [name, setName] = useState("Juan");
     const easContractAddress = "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458";
 
-
-
-
-
-
     const eas = new EAS(easContractAddress);
-
     const roys = state.roys;
     let roy = state.roy;
     // Signer must be an ethers-like signer.
@@ -43,7 +37,7 @@ const BottomMiddleComponent: React.FC = () => {
     const attestRoy = async (
     ) => {
 
-        const schemaUID = "0x7559b6ba03d0f9bd9813dd2b68cb94232e0e3205201a649330fd0bfcf6929be4";
+        const schemaUID = "0x8d915de0951fc02b7f25f1744f77737e017ffb132057b5debd0c9ec7df2cc343";
         const eas = new EAS(easContractAddress);
         // Signer must be an ethers-like signer.
 
@@ -64,16 +58,18 @@ const BottomMiddleComponent: React.FC = () => {
                 expirationTime: BigInt(0),
                 revocable: true, // Be aware that if your schema is not revocable, this MUST be false
                 data: encodedData,
-                value: BigInt(5000000000),
+                value: BigInt(5),
             },
         });
 
 
 
-        let uid = tx.tx.data;
+        let uid = await tx.wait();
+        toast.success("Attesting ROY!");
         roy = await newRoy(uid, address, name, location, Number(year))
         state.setRoy(roy);
         toast.success("Roy Attested!");
+        console.log(uid);
     }
 
 

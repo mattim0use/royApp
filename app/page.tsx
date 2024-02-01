@@ -42,7 +42,7 @@ const Home: NextPage = () => {
             case 0: return <Image
                 className="fixed"
                 fill
-                src="/RoyTitleScreen.png"
+                src={roy.attributes?.image || "/RoyTitleScreen.png"}
                 alt="Roy Title Screen"
             />
         }
@@ -171,7 +171,7 @@ const Home: NextPage = () => {
                         <Image
                             className="fixed"
                             fill
-                            src="/RoyTitleScreen.png"
+                            src={roy.attributes?.image || "/RoyTitleScreen.png"}
                             alt="Roy Title Screen"
                         />
 
