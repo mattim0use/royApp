@@ -60,8 +60,9 @@ const UpperRightComponent: React.FC = () => {
                 <li>
                   <strong>Resolution:</strong> {roy?.currentDecadeResolution}
                 </li>
-
-                <RoyExperiences />
+                <div className="abesolute">
+                  <RoyExperiences />
+                </div>
                 <Image
                   src={roy.attributes.image || "/RoyTitleScreen.png"}
                   height={100}
